@@ -1,4 +1,8 @@
-import type { MultipassResponse, MultipassOptions, MultipassTokenResponseType } from './types';
+import type {
+  MultipassResponse,
+  MultipassOptions,
+  MultipassTokenResponseType,
+} from './types';
 
 /*
   A utility that makes a POST request to the local `/account/login/multipass` endpoint
@@ -10,14 +14,14 @@ import type { MultipassResponse, MultipassOptions, MultipassTokenResponseType } 
   - Social login buttons `onClick` handler.
 */
 export async function multipass(
-  options: MultipassOptions
+  options: MultipassOptions,
 ): Promise<void | MultipassResponse> {
-  const { redirect, customer, return_to } = options;
+  const {redirect, customer, return_to} = options;
 
   try {
     // If we pass `return_to` we try to get the customer
     // from the session. If not, it will throw.
-    const body = customer ? { customer } : { return_to };
+    const body = customer ? {customer} : {return_to};
 
     // Generate multipass token POST `/account/login/multipass`
     const response = await fetch('/account/login/multipass', {
@@ -34,8 +38,7 @@ export async function multipass(
     }
 
     // Extract multipass token and url
-    const { data, error } = await response.json() as MultipassTokenResponseType
-
+    const {data, error} = (await response.json()) as MultipassTokenResponseType;
 
     if (error) {
       throw new Error(error);
@@ -75,6 +78,6 @@ export async function multipass(
       window.location.href = return_to;
     }
 
-    return { url: null, token: null, error: message };
+    return {url: null, token: null, error: message};
   }
 }

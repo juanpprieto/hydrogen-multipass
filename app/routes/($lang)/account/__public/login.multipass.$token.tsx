@@ -1,33 +1,35 @@
-import { type LoaderArgs, redirect } from '@shopify/remix-oxygen';
-import { Multipassify } from '~/lib/multipass/multipassify.server';
+import type {HydrogenSession} from '~/lib/session.server';
+import {type LoaderArgs, redirect} from '@shopify/remix-oxygen';
+import {Multipassify} from '~/lib/multipass/multipassify.server';
 
 type QueryError = {
   message: string;
   code: string;
   field: string;
-}
+};
 
 type MultipassTokenResponse = {
   result: {
     token: {
       customerAccessToken: string;
     };
-    customerUserErrors: QueryError[]
-  }
-}
+    customerUserErrors: QueryError[];
+  };
+};
 
 /**
  *  Authenticate a multipass token request
  */
-export async function loader({ request, params, context }: LoaderArgs) {
-  const { session, storefront, env } = context;
+export async function loader({request, params, context}: LoaderArgs) {
+  const {session, storefront, env} = context;
+
   // multipass token
   const passedToken = params.token;
 
   try {
     // create a multipassify instance
     const multipassify = new Multipassify(
-      env.PRIVATE_SHOPIFY_STORE_MULTIPASS_SECRET
+      env.PRIVATE_SHOPIFY_STORE_MULTIPASS_SECRET,
     );
     // extract customer from the multipass token
     const customer = multipassify.parseToken(passedToken);
@@ -35,32 +37,34 @@ export async function loader({ request, params, context }: LoaderArgs) {
     const return_to = customer?.return_to || '/account/login';
 
     // retrieve the customer token based on the multipass token
-    const { result } = await storefront.mutate<MultipassTokenResponse>(
+    const {result} = await storefront.mutate<MultipassTokenResponse>(
       CUSTOMER_ACCESS_TOKEN_FROM_TOKEN_MUTATION,
       {
         variables: {
           multipassToken: passedToken,
         },
-      });
+      },
+    );
 
-    const { token, customerUserErrors } = result;
+    const {token, customerUserErrors} = result;
 
     if (customerUserErrors.length) {
       const messages = customerUserErrors
         .map((error: QueryError) => error.message)
         .join(', ');
-      return new Response(messages, {
-        status: 403,
-      });
+
+      session.flash('error', messages);
+      return await redirectHomeError({session, error: messages});
     }
 
     if (!token) {
-      return new Response('Access token not found', {
-        status: 403,
+      return await redirectHomeError({
+        session,
+        error: 'Access token not found',
       });
     }
 
-    const { customerAccessToken } = token;
+    const {customerAccessToken} = token;
 
     if (customerAccessToken) {
       // store the customer access token in the session
@@ -71,16 +75,29 @@ export async function loader({ request, params, context }: LoaderArgs) {
       headers: {
         'Cache-Control': 'no-cache',
         'Set-Cookie': await session.commit(),
-      }
+      },
     });
   } catch (error) {
-    return new Response(
-      error instanceof Error ? error.message : JSON.stringify(error),
-      {
-        status: 500,
-      }
-    );
+    const message =
+      error instanceof Error ? error.message : JSON.stringify(error);
+    return await redirectHomeError({session, error: message});
   }
+}
+
+async function redirectHomeError({
+  session,
+  error,
+}: {
+  session: HydrogenSession;
+  error: string;
+}) {
+  session.flash('error', error);
+  return redirect('/', {
+    headers: {
+      'Cache-Control': 'no-cache',
+      'Set-Cookie': await session.commit(),
+    },
+  });
 }
 
 const CUSTOMER_ACCESS_TOKEN_FROM_TOKEN_MUTATION = `#graphql

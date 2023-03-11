@@ -1,4 +1,9 @@
-import {json, redirect, type ActionArgs, type LoaderArgs } from '@shopify/remix-oxygen'
+import {
+  json,
+  redirect,
+  type ActionArgs,
+  type LoaderArgs,
+} from '@shopify/remix-oxygen';
 import {Multipassify} from '~/lib/multipass/multipassify.server';
 import type {
   CustomerInfoType,
@@ -60,11 +65,13 @@ export async function action({request, context}: ActionArgs) {
     if (!customer && customerAccessToken) {
       // Have a customerAccessToken, get the customer so we can find their email.
       const response: {customer: CustomerInfoType} = await storefront.query(
-         CUSTOMER_INFO_QUERY, {
-        variables: {
-          customerAccessToken,
+        CUSTOMER_INFO_QUERY,
+        {
+          variables: {
+            customerAccessToken,
+          },
         },
-      });
+      );
 
       customer = response?.customer ?? null;
     }
@@ -77,7 +84,6 @@ export async function action({request, context}: ActionArgs) {
         checkoutDomain: env.PRIVATE_SHOPIFY_CHECKOUT_DOMAIN,
       });
     }
-
 
     // Check if customer has the required fields to create a multipass token
     if (!customer?.email) {
@@ -97,7 +103,7 @@ export async function action({request, context}: ActionArgs) {
     try {
       // generate a multipass url and token
       const multipassify = new Multipassify(
-        env.PRIVATE_SHOPIFY_STORE_MULTIPASS_SECRET
+        env.PRIVATE_SHOPIFY_STORE_MULTIPASS_SECRET,
       );
 
       const customerInfo: CustomerInfoType = {
@@ -121,10 +127,13 @@ export async function action({request, context}: ActionArgs) {
       }
 
       // success, return token, url
-      return json({data: {...data, error: null}}, {
-        status: 200,
-        headers: getCorsHeaders(origin),
-      });
+      return json(
+        {data: {...data, error: null}},
+        {
+          status: 200,
+          headers: getCorsHeaders(origin),
+        },
+      );
     } catch (error) {
       let message = 'unknown error';
       if (error instanceof Error) {
@@ -164,7 +173,7 @@ function handleMethodNotAllowed() {
     {
       status: 405,
       headers: {Allow: 'POST, OPTIONS'},
-    }
+    },
   );
 }
 
@@ -174,7 +183,6 @@ function handleOptionsPreflight(origin: string) {
     headers: getCorsHeaders(origin),
   });
 }
-
 
 // Force log out a user in the checkout, if they logged out in the site.
 // This fixes the edge-case where a user logs in (app),
@@ -234,6 +242,8 @@ function NotLoggedInResponse(options: NotLoggedInResponseType) {
   } else {
     error = ERRORS[errorKey] ?? 'UNKNOWN_ERROR';
   }
+
+  console.error('Multipass not logged in error:', error);
 
   // Always return the original URL.
   return json({data: {url}, error});

@@ -1,4 +1,4 @@
-import { GoogleLoginButton } from '~/components/GoogleLoginButton'
+import {GoogleLoginButton} from '~/components/GoogleLoginButton';
 import {type LoaderArgs, json, redirect} from '@shopify/remix-oxygen';
 
 export async function loader({context, params}: LoaderArgs) {
@@ -21,5 +21,5 @@ export default function GoogleLogin() {
         <GoogleLoginButton />
       </div>
     </div>
-  )
+  );
 }

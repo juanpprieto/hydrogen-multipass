@@ -82,8 +82,8 @@ export async function loader({context}: LoaderArgs) {
       shopId: layout.shop.id,
     },
     env: {
-     PUBLIC_GOOGLE_CLIENT_ID: env.PUBLIC_GOOGLE_CLIENT_ID,
-    }
+      PUBLIC_GOOGLE_CLIENT_ID: env.PUBLIC_GOOGLE_CLIENT_ID,
+    },
   });
 }
 

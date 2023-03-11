@@ -1,6 +1,6 @@
 import snake_cake from 'snakecase-keys';
 import CryptoJS from 'crypto-js';
-import type { MultipassCustomer } from './types';
+import type {MultipassCustomer} from './types';
 
 /*
   Shopify multipassify implementation for node and v8/worker runtime
@@ -26,10 +26,10 @@ export class Multipassify {
 
     // create the encryption and signing keys
     this.encryptionKey = CryptoJS.lib.WordArray.create(
-      digest.words.slice(0, this.BLOCK_SIZE / 4)
+      digest.words.slice(0, this.BLOCK_SIZE / 4),
     );
     this.signingKey = CryptoJS.lib.WordArray.create(
-      digest.words.slice(this.BLOCK_SIZE / 4, this.BLOCK_SIZE / 2)
+      digest.words.slice(this.BLOCK_SIZE / 4, this.BLOCK_SIZE / 2),
     );
 
     return this;
@@ -40,7 +40,7 @@ export class Multipassify {
   public generate(
     customer: MultipassCustomer,
     shopifyDomain: string,
-    request: Request
+    request: Request,
   ) {
     if (!shopifyDomain) {
       throw new Error('domain is required');
@@ -56,15 +56,16 @@ export class Multipassify {
     const toOrigin = new URL(request.url).origin;
 
     const redirectToCheckout = customer.return_to
-      ? customer.return_to.includes('cart/c') || customer.return_to.includes('checkout')
+      ? customer.return_to.includes('cart/c') ||
+        customer.return_to.includes('checkout')
       : false;
 
     // if the target url is the checkout, we use the shopify domain liquid auth
     const toUrl = redirectToCheckout
       ? `https://${shopifyDomain}/account/login/multipass/${token}` // uses liquid multipass auth
-      : `${toOrigin}/account/login/multipass/${token}` // uses local multipass verification. @see: api route
+      : `${toOrigin}/account/login/multipass/${token}`; // uses local multipass verification. @see: api route
 
-    return { url: toUrl, token };
+    return {url: toUrl, token};
   }
 
   // Generates a token
@@ -116,15 +117,15 @@ export class Multipassify {
 
     const encryptLength = tokenBytes.words.length - 8; // all minus 8 words of the signature
     const _encrypted = CryptoJS.lib.WordArray.create(
-      tokenBytes.words.slice(0, encryptLength)
+      tokenBytes.words.slice(0, encryptLength),
     );
 
     const iv = CryptoJS.lib.WordArray.create(
-      _encrypted.words.slice(0, this.BLOCK_SIZE / 4)
+      _encrypted.words.slice(0, this.BLOCK_SIZE / 4),
     );
 
     const encrypted = CryptoJS.lib.WordArray.create(
-      _encrypted.words.slice(iv.words.length, _encrypted.words.length)
+      _encrypted.words.slice(iv.words.length, _encrypted.words.length),
     );
 
     const encryptedCustomer = CryptoJS.enc.Base64.stringify(encrypted);
@@ -136,7 +137,7 @@ export class Multipassify {
         iv,
         mode: CryptoJS.mode.CBC,
         padding: CryptoJS.pad.Pkcs7,
-      }
+      },
     );
 
     const customerText = decryptedCustomer.toString(CryptoJS.enc.Utf8);

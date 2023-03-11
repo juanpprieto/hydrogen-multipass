@@ -46,7 +46,7 @@ export function GoogleLoginButton() {
       email: account.email,
       multipass_identifier: account.sub,
       // return_to: `${window.location.origin}/account`
-      return_to: `/account`
+      return_to: `/account`,
     };
 
     // authenticate google customer info via multipass
@@ -80,11 +80,11 @@ export function GoogleLoginButton() {
           size: 'large',
           type: 'standard',
           autoPrompt: false,
-        } // customization attributes
+        }, // customization attributes
       );
     };
 
-    console.log(document.body)
+    console.log(document.body);
 
     document.body.appendChild(script);
   }, []);

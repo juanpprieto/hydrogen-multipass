@@ -12,7 +12,7 @@ import type {
   MailingAddress,
   Order,
 } from '@shopify/hydrogen/storefront-api-types';
-import { Suspense } from 'react';
+import {Suspense} from 'react';
 import {
   Button,
   OrderCard,
@@ -23,7 +23,7 @@ import {
   Modal,
   ProductSwimlane,
 } from '~/components';
-import { FeaturedCollections } from '~/components/FeaturedCollections';
+import {FeaturedCollections} from '~/components/FeaturedCollections';
 import {
   json,
   defer,
@@ -31,17 +31,17 @@ import {
   type LoaderArgs,
   type AppLoadContext,
 } from '@shopify/remix-oxygen';
-import { flattenConnection } from '@shopify/hydrogen';
-import { getFeaturedData } from './featured-products';
-import { doLogout } from './account/__private/logout';
-import { usePrefixPathWithLocale } from '~/lib/utils';
+import {flattenConnection} from '@shopify/hydrogen';
+import {getFeaturedData} from './featured-products';
+import {doLogout} from './account/__private/logout';
+import {usePrefixPathWithLocale} from '~/lib/utils';
 
 // Combining json + Response + defer in a loader breaks the
 // types returned by useLoaderData. This is a temporary fix.
-type TmpRemixFix = ReturnType<typeof defer<{ isAuthenticated: false }>>;
+type TmpRemixFix = ReturnType<typeof defer<{isAuthenticated: false}>>;
 
-export async function loader({ request, context, params }: LoaderArgs) {
-  const { pathname } = new URL(request.url);
+export async function loader({request, context, params}: LoaderArgs) {
+  const {pathname} = new URL(request.url);
   const lang = params.lang;
   const customerAccessToken = await context.session.get('customerAccessToken');
   const isAuthenticated = Boolean(customerAccessToken);
@@ -54,7 +54,7 @@ export async function loader({ request, context, params }: LoaderArgs) {
     }
 
     // pass through to public routes
-    return json({ isAuthenticated: false}) as unknown as TmpRemixFix;
+    return json({isAuthenticated: false}) as unknown as TmpRemixFix;
   }
 
   const customer = await getCustomer(context, customerAccessToken);
@@ -99,13 +99,13 @@ export default function Authenticated() {
       return (
         <>
           <Modal cancelLink="/account">
-            <Outlet context={{ customer: data.customer }} />
+            <Outlet context={{customer: data.customer}} />
           </Modal>
           <Account {...(data as Account)} />
         </>
       );
     } else {
-      return <Outlet context={{ customer: data.customer }} />;
+      return <Outlet context={{customer: data.customer}} />;
     }
   }
 
@@ -165,7 +165,7 @@ function Account({
   );
 }
 
-function AccountOrderHistory({ orders }: { orders: Order[] }) {
+function AccountOrderHistory({orders}: {orders: Order[]}) {
   return (
     <div className="mt-6">
       <div className="grid w-full gap-4 p-4 py-6 md:gap-8 md:p-8 lg:p-12">
@@ -195,7 +195,7 @@ function EmptyOrders() {
   );
 }
 
-function Orders({ orders }: { orders: Order[] }) {
+function Orders({orders}: {orders: Order[]}) {
   return (
     <ul className="grid grid-flow-row grid-cols-1 gap-2 gap-y-6 md:gap-4 lg:gap-6 false sm:grid-cols-3">
       {orders.map((order) => (
@@ -286,7 +286,7 @@ export async function getCustomer(
   context: AppLoadContext,
   customerAccessToken: string,
 ) {
-  const { storefront } = context;
+  const {storefront} = context;
 
   const data = await storefront.query<{
     customer: Customer;

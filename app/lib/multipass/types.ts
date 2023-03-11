@@ -83,6 +83,6 @@ export interface MultipassTokenResponseType {
   data: {
     url: string;
     token: string;
-  }
+  };
   error: string | null;
 }

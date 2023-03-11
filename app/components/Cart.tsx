@@ -1,7 +1,7 @@
 import clsx from 'clsx';
-import { useRef } from 'react';
-import { useScroll } from 'react-use';
-import { flattenConnection, Image, Money } from '@shopify/hydrogen';
+import {useRef} from 'react';
+import {useScroll} from 'react-use';
+import {flattenConnection, Image, Money} from '@shopify/hydrogen';
 import {
   Button,
   Heading,
@@ -11,15 +11,15 @@ import {
   FeaturedProducts,
   MultipassCheckoutButton,
 } from '~/components';
-import { getInputStyleClasses } from '~/lib/utils';
+import {getInputStyleClasses} from '~/lib/utils';
 import type {
   Cart as CartType,
   CartCost,
   CartLine,
   CartLineUpdateInput,
 } from '@shopify/hydrogen/storefront-api-types';
-import { useFetcher } from '@remix-run/react';
-import { CartAction } from '~/lib/type';
+import {useFetcher} from '@remix-run/react';
+import {CartAction} from '~/lib/type';
 
 type Layouts = 'page' | 'drawer';
 
@@ -80,7 +80,7 @@ function CartDiscounts({
 }: {
   discountCodes: CartType['discountCodes'];
 }) {
-  const codes = discountCodes?.map(({ code }) => code).join(', ') || null;
+  const codes = discountCodes?.map(({code}) => code).join(', ') || null;
 
   return (
     <>
@@ -93,7 +93,7 @@ function CartDiscounts({
               <button>
                 <IconRemove
                   aria-hidden="true"
-                  style={{ height: 18, marginRight: 4 }}
+                  style={{height: 18, marginRight: 4}}
                 />
               </button>
             </UpdateDiscountForm>
@@ -125,7 +125,7 @@ function CartDiscounts({
   );
 }
 
-function UpdateDiscountForm({ children }: { children: React.ReactNode }) {
+function UpdateDiscountForm({children}: {children: React.ReactNode}) {
   const fetcher = useFetcher();
   return (
     <fetcher.Form action="/cart" method="post">
@@ -148,7 +148,7 @@ function CartLines({
 }) {
   const currentLines = cartLines ? flattenConnection(cartLines) : [];
   const scrollRef = useRef(null);
-  const { y } = useScroll(scrollRef);
+  const {y} = useScroll(scrollRef);
 
   const className = clsx([
     y > 0 ? 'border-t' : '',
@@ -172,14 +172,12 @@ function CartLines({
   );
 }
 
-function CartCheckoutActions({ checkoutUrl }: { checkoutUrl: string }) {
+function CartCheckoutActions({checkoutUrl}: {checkoutUrl: string}) {
   if (!checkoutUrl) return null;
 
   return (
     <div className="flex flex-col mt-2">
-      <MultipassCheckoutButton
-        checkoutUrl={checkoutUrl}
-      >
+      <MultipassCheckoutButton checkoutUrl={checkoutUrl}>
         <Button as="span" width="full">
           Continue to Checkout
         </Button>
@@ -225,10 +223,10 @@ function CartSummary({
   );
 }
 
-function CartLineItem({ line }: { line: CartLine }) {
+function CartLineItem({line}: {line: CartLine}) {
   if (!line?.id) return null;
 
-  const { id, quantity, merchandise } = line;
+  const {id, quantity, merchandise} = line;
 
   if (typeof quantity === 'undefined' || !merchandise?.product) return null;
 
@@ -281,7 +279,7 @@ function CartLineItem({ line }: { line: CartLine }) {
   );
 }
 
-function ItemRemoveButton({ lineIds }: { lineIds: CartLine['id'][] }) {
+function ItemRemoveButton({lineIds}: {lineIds: CartLine['id'][]}) {
   const fetcher = useFetcher();
 
   return (
@@ -303,9 +301,9 @@ function ItemRemoveButton({ lineIds }: { lineIds: CartLine['id'][] }) {
   );
 }
 
-function CartLineQuantityAdjust({ line }: { line: CartLine }) {
+function CartLineQuantityAdjust({line}: {line: CartLine}) {
   if (!line || typeof line?.quantity === 'undefined') return null;
-  const { id: lineId, quantity } = line;
+  const {id: lineId, quantity} = line;
   const prevQuantity = Number(Math.max(0, quantity - 1).toFixed(0));
   const nextQuantity = Number((quantity + 1).toFixed(0));
 
@@ -315,7 +313,7 @@ function CartLineQuantityAdjust({ line }: { line: CartLine }) {
         Quantity, {quantity}
       </label>
       <div className="flex items-center border rounded">
-        <UpdateCartButton lines={[{ id: lineId, quantity: prevQuantity }]}>
+        <UpdateCartButton lines={[{id: lineId, quantity: prevQuantity}]}>
           <button
             name="decrease-quantity"
             aria-label="Decrease quantity"
@@ -331,7 +329,7 @@ function CartLineQuantityAdjust({ line }: { line: CartLine }) {
           {quantity}
         </div>
 
-        <UpdateCartButton lines={[{ id: lineId, quantity: nextQuantity }]}>
+        <UpdateCartButton lines={[{id: lineId, quantity: nextQuantity}]}>
           <button
             className="w-10 h-10 transition text-primary/50 hover:text-primary"
             name="increase-quantity"
@@ -397,7 +395,7 @@ export function CartEmpty({
   onClose?: () => void;
 }) {
   const scrollRef = useRef(null);
-  const { y } = useScroll(scrollRef);
+  const {y} = useScroll(scrollRef);
 
   const container = {
     drawer: clsx([
