@@ -65,12 +65,15 @@ export const meta: MetaFunction = () => ({
 });
 
 export async function loader({context}: LoaderArgs) {
-  const [cartId, layout] = await Promise.all([
+  const {env} = context;
+  const [customerAccessToken, cartId, layout] = await Promise.all([
+    context.session.get('customerAccessToken'),
     context.session.get('cartId'),
     getLayoutData(context),
   ]);
 
   return defer({
+    isLoggedIn: Boolean(customerAccessToken),
     layout,
     selectedLocale: context.storefront.i18n,
     cart: cartId ? getCart(context, cartId) : undefined,
@@ -78,6 +81,9 @@ export async function loader({context}: LoaderArgs) {
       shopifySalesChannel: ShopifySalesChannel.hydrogen,
       shopId: layout.shop.id,
     },
+    env: {
+     PUBLIC_GOOGLE_CLIENT_ID: env.PUBLIC_GOOGLE_CLIENT_ID,
+    }
   });
 }
 

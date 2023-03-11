@@ -58,7 +58,7 @@ export function IconClose(props: IconProps) {
   );
 }
 
-export function IconArrow({direction = 'right'}: IconProps) {
+export function IconArrow({ direction = 'right' }: IconProps) {
   let rotate;
 
   switch (direction) {
@@ -141,6 +141,18 @@ export function IconBag(props: IconProps) {
         fillRule="evenodd"
         d="M8.125 5a1.875 1.875 0 0 1 3.75 0v.375h-3.75V5Zm-1.25.375V5a3.125 3.125 0 1 1 6.25 0v.375h3.5V15A2.625 2.625 0 0 1 14 17.625H6A2.625 2.625 0 0 1 3.375 15V5.375h3.5ZM4.625 15V6.625h10.75V15c0 .76-.616 1.375-1.375 1.375H6c-.76 0-1.375-.616-1.375-1.375Z"
       />
+    </Icon>
+  );
+}
+
+export function IconLogin(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <title>Login</title>
+      <g stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
+        <path d="M8,10.6928545 C10.362615,10.6928545 12.4860225,11.7170237 13.9504747,13.3456144 C12.4860225,14.9758308 10.362615,16 8,16 C5.63738499,16 3.51397752,14.9758308 2.04952533,13.3472401 C3.51397752,11.7170237 5.63738499,10.6928545 8,10.6928545 Z"  fill="currentColor"></path>
+        <path d="M8,3.5 C6.433,3.5 5.25,4.894 5.25,6.5 C5.25,8.106 6.433,9.5 8,9.5 C9.567,9.5 10.75,8.106 10.75,6.5 C10.75,4.894 9.567,3.5 8,3.5 Z" fill="currentColor" fillRule="nonzero"></path>
+      </g>
     </Icon>
   );
 }

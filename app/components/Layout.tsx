@@ -8,6 +8,7 @@ import {
   useDrawer,
   Text,
   Input,
+  IconLogin,
   IconAccount,
   IconBag,
   IconSearch,
@@ -20,13 +21,13 @@ import {
   CartLoading,
   Link,
 } from '~/components';
-import {useParams, Form, Await, useMatches} from '@remix-run/react';
-import {useWindowScroll} from 'react-use';
-import {Disclosure} from '@headlessui/react';
-import {Suspense, useEffect, useMemo} from 'react';
-import {useIsHydrated} from '~/hooks/useIsHydrated';
-import {useCartFetchers} from '~/hooks/useCartFetchers';
-import type {LayoutData} from '../root';
+import { useParams, Form, Await, useMatches } from '@remix-run/react';
+import { useWindowScroll } from 'react-use';
+import { Disclosure } from '@headlessui/react';
+import { Suspense, useEffect, useMemo } from 'react';
+import { useIsHydrated } from '~/hooks/useIsHydrated';
+import { useCartFetchers } from '~/hooks/useCartFetchers';
+import type { LayoutData } from '../root';
 
 export function Layout({
   children,
@@ -56,7 +57,7 @@ export function Layout({
   );
 }
 
-function Header({title, menu}: {title: string; menu?: EnhancedMenu}) {
+function Header({ title, menu }: { title: string; menu?: EnhancedMenu }) {
   const isHome = useIsHomePath();
 
   const {
@@ -101,7 +102,7 @@ function Header({title, menu}: {title: string; menu?: EnhancedMenu}) {
   );
 }
 
-function CartDrawer({isOpen, onClose}: {isOpen: boolean; onClose: () => void}) {
+function CartDrawer({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   const [root] = useMatches();
 
   return (
@@ -151,7 +152,7 @@ function MenuMobileNav({
             to={item.to}
             target={item.target}
             onClick={onClose}
-            className={({isActive}) =>
+            className={({ isActive }) =>
               isActive ? 'pb-1 border-b -mb-px' : 'pb-1'
             }
           >
@@ -183,11 +184,10 @@ function MobileHeader({
   return (
     <header
       role="banner"
-      className={`${
-        isHome
-          ? 'bg-primary/80 dark:bg-contrast/60 text-contrast dark:text-primary shadow-darkHeader'
-          : 'bg-contrast/80 text-primary'
-      } flex lg:hidden items-center h-nav sticky backdrop-blur-lg z-40 top-0 justify-between w-full leading-none gap-4 px-4 md:px-8`}
+      className={`${isHome
+        ? 'bg-primary/80 dark:bg-contrast/60 text-contrast dark:text-primary shadow-darkHeader'
+        : 'bg-contrast/80 text-primary'
+        } flex lg:hidden items-center h-nav sticky backdrop-blur-lg z-40 top-0 justify-between w-full leading-none gap-4 px-4 md:px-8`}
     >
       <div className="flex items-center justify-start w-full gap-4">
         <button
@@ -231,12 +231,9 @@ function MobileHeader({
       </Link>
 
       <div className="flex items-center justify-end w-full gap-4">
-        <Link
-          to="/account"
+        <AccountLink
           className="relative flex items-center justify-center w-8 h-8"
-        >
-          <IconAccount />
-        </Link>
+        />
         <CartCount isHome={isHome} openCart={openCart} />
       </div>
     </header>
@@ -255,17 +252,15 @@ function DesktopHeader({
   title: string;
 }) {
   const params = useParams();
-  const {y} = useWindowScroll();
+  const { y } = useWindowScroll();
   return (
     <header
       role="banner"
-      className={`${
-        isHome
-          ? 'bg-primary/80 dark:bg-contrast/60 text-contrast dark:text-primary shadow-darkHeader'
-          : 'bg-contrast/80 text-primary'
-      } ${
-        !isHome && y > 50 && ' shadow-lightHeader'
-      } hidden h-nav lg:flex items-center sticky transition duration-300 backdrop-blur-lg z-40 top-0 justify-between w-full leading-none gap-8 px-12 py-8`}
+      className={`${isHome
+        ? 'bg-primary/80 dark:bg-contrast/60 text-contrast dark:text-primary shadow-darkHeader'
+        : 'bg-contrast/80 text-primary'
+        } ${!isHome && y > 50 && ' shadow-lightHeader'
+        } hidden h-nav lg:flex items-center sticky transition duration-300 backdrop-blur-lg z-40 top-0 justify-between w-full leading-none gap-8 px-12 py-8`}
     >
       <div className="flex gap-12">
         <Link className="font-bold" to="/" prefetch="intent">
@@ -279,7 +274,7 @@ function DesktopHeader({
               to={item.to}
               target={item.target}
               prefetch="intent"
-              className={({isActive}) =>
+              className={({ isActive }) =>
                 isActive ? 'pb-1 border-b -mb-px' : 'pb-1'
               }
             >
@@ -312,16 +307,27 @@ function DesktopHeader({
             <IconSearch />
           </button>
         </Form>
-        <Link
-          to="/account"
+        <AccountLink
           className="relative flex items-center justify-center w-8 h-8 focus:ring-primary/5"
-        >
-          <IconAccount />
-        </Link>
+        />
         <CartCount isHome={isHome} openCart={openCart} />
       </div>
     </header>
   );
+}
+
+function AccountLink({ className }: { className?: string }) {
+  const [root] = useMatches()
+  const isLoggedIn = root.data?.isLoggedIn
+  return isLoggedIn ? (
+    <Link to="/account" className={className} >
+      <IconAccount />
+    </Link>
+  ) : (
+    <Link to="/account/login" className={className} >
+      <IconLogin />
+    </Link>
+  )
 }
 
 function CartCount({
@@ -364,11 +370,10 @@ function Badge({
       <>
         <IconBag />
         <div
-          className={`${
-            dark
-              ? 'text-primary bg-contrast dark:text-contrast dark:bg-primary'
-              : 'text-contrast bg-primary'
-          } absolute bottom-1 right-1 text-[0.625rem] font-medium subpixel-antialiased h-3 min-w-[0.75rem] flex items-center justify-center leading-none text-center rounded-full w-auto px-[0.125rem] pb-px`}
+          className={`${dark
+            ? 'text-primary bg-contrast dark:text-contrast dark:bg-primary'
+            : 'text-contrast bg-primary'
+            } absolute bottom-1 right-1 text-[0.625rem] font-medium subpixel-antialiased h-3 min-w-[0.75rem] flex items-center justify-center leading-none text-center rounded-full w-auto px-[0.125rem] pb-px`}
         >
           <span>{count || 0}</span>
         </div>
@@ -394,7 +399,7 @@ function Badge({
   );
 }
 
-function Footer({menu}: {menu?: EnhancedMenu}) {
+function Footer({ menu }: { menu?: EnhancedMenu }) {
   const isHome = useIsHomePath();
   const itemsCount = menu
     ? menu?.items?.length + 1 > 4
@@ -422,7 +427,7 @@ function Footer({menu}: {menu?: EnhancedMenu}) {
   );
 }
 
-const FooterLink = ({item}: {item: EnhancedMenuItem}) => {
+const FooterLink = ({ item }: { item: EnhancedMenuItem }) => {
   if (item.to.startsWith('http')) {
     return (
       <a href={item.to} target={item.target} rel="noopener noreferrer">
@@ -438,7 +443,7 @@ const FooterLink = ({item}: {item: EnhancedMenuItem}) => {
   );
 };
 
-function FooterMenu({menu}: {menu?: EnhancedMenu}) {
+function FooterMenu({ menu }: { menu?: EnhancedMenu }) {
   const styles = {
     section: 'grid gap-4',
     nav: 'grid gap-2 pb-6',
@@ -449,7 +454,7 @@ function FooterMenu({menu}: {menu?: EnhancedMenu}) {
       {(menu?.items || []).map((item: EnhancedMenuItem) => (
         <section key={item.id} className={styles.section}>
           <Disclosure>
-            {({open}) => (
+            {({ open }) => (
               <>
                 <Disclosure.Button className="text-left md:cursor-default">
                   <Heading className="flex justify-between" size="lead" as="h3">
@@ -463,9 +468,8 @@ function FooterMenu({menu}: {menu?: EnhancedMenu}) {
                 </Disclosure.Button>
                 {item?.items?.length > 0 ? (
                   <div
-                    className={`${
-                      open ? `max-h-48 h-fit` : `max-h-0 md:max-h-fit`
-                    } overflow-hidden transition-all duration-300`}
+                    className={`${open ? `max-h-48 h-fit` : `max-h-0 md:max-h-fit`
+                      } overflow-hidden transition-all duration-300`}
                   >
                     <Suspense data-comment="This suspense fixes a hydration bug in Disclosure.Panel with static prop">
                       <Disclosure.Panel static>
