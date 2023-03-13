@@ -23,6 +23,9 @@ declare global {
     PUBLIC_STOREFRONT_ID: string;
     PRIVATE_SHOPIFY_STORE_MULTIPASS_SECRET: string;
     PRIVATE_SHOPIFY_CHECKOUT_DOMAIN: string;
+    PUBLIC_AUTH0_CLIENT_ID: string,
+    PUBLIC_AUTH0_DOMAIN: string,
+    PUBLIC_HYDROGEN_DOMAIN: string,
   }
 }
 
