@@ -45,7 +45,6 @@ export function GoogleLoginButton() {
       last_name: account.family_name,
       email: account.email,
       multipass_identifier: account.sub,
-      // return_to: `${window.location.origin}/account`
       return_to: `/account`,
     };
 
