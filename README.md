@@ -15,7 +15,7 @@ Demonstrates how to persist the user session between Hydrogen and the checkout.
 5. Add the [multipass token generation route](https://github.com/juanpprieto/hydrogen-multipass/blob/main/app/routes/(%24lang)/account/__public/login.multipass.tsx) to `app/routes/($lang)/account/__public/login.multipass.tsx`
 6. [Implement](https://github.com/juanpprieto/hydrogen-multipass/blob/0ceaf0207d2a9464d82b458275a8a254452b77dc/app/components/Cart.tsx#L180) the `<MulitpassCheckoutButton />` in the `<Cart />` component at `app/components/Cart.tsx`
  
-### Flow
+### Checkout flow
 
 1. Login via `/account/login`
 2. Add any product to the cart
@@ -37,7 +37,7 @@ The `/account/login-google` route demonstrates loginng with a 3rd-Party auth pro
 6. Add the [multipass token validation route](https://github.com/juanpprieto/hydrogen-multipass/blob/main/app/routes/(%24lang)/account/__public/login.multipass.%24token.tsx) to `app/routes/(%24lang)/account/__public/login.multipass.%24token.tsx`
 7. [Implement](https://github.com/juanpprieto/hydrogen-multipass/blob/main/app/routes/(%24lang)/account/__public/login-google.tsx) the `<GoogleSignIn />` in the  google sign in login route (or `/app/routes/account/login`) `app/components/Cart.tsx`
 
-### Multipass Google login flow:
+### Login flow:
 
 1. Login via `/account/login-google/`
 2. The [<GoogleSignInButton />](https://github.com/juanpprieto/hydrogen-multipass/blob/main/app/components/GoogleLoginButton.tsx) triggers the google auth flow
