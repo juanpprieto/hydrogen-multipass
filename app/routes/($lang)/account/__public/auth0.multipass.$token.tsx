@@ -24,10 +24,9 @@ export async function loader({request, params, context}: LoaderArgs) {
   const url = new URL(request.url);
   const searchParams = new URLSearchParams(url.search);
   const state = searchParams.get('state');
-  console.log('state', state);
 
   try {
-    const passedToken = params.token;
+    const passedToken = decodeURIComponent(params.token);
     console.log('passedToken', passedToken);
 
     // create a multipassify instance
