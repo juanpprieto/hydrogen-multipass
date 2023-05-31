@@ -16,12 +16,12 @@ import type {
 export async function multipass(
   options: MultipassOptions,
 ): Promise<void | MultipassResponse> {
-  const {redirect, customer, return_to} = options;
+  const {redirect, token, provider, return_to} = options;
 
   try {
     // If we pass `return_to` we try to get the customer
     // from the session. If not, it will throw.
-    const body = customer ? {customer} : {return_to};
+    const body = token ? {token, provider} : {return_to};
 
     // Generate multipass token POST `/account/login/multipass`
     const response = await fetch('/account/login/multipass', {
