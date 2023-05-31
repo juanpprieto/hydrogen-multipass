@@ -1,6 +1,5 @@
 import {useMatches} from '@remix-run/react';
 import {useRef, useEffect} from 'react';
-import jwtDecode from 'jwt-decode';
 import {multipass} from '~/lib/multipass/multipass';
 
 interface GoogleJwTResponseType {
