@@ -3,14 +3,6 @@ import {useRef, useEffect} from 'react';
 import jwtDecode from 'jwt-decode';
 import {multipass} from '~/lib/multipass/multipass';
 
-interface GoogleJwtCredentialsType {
-  given_name: string;
-  family_name: string;
-  email: string;
-  picture: string;
-  sub: string;
-}
-
 interface GoogleJwTResponseType {
   credential: string;
 }
@@ -37,20 +29,10 @@ export function GoogleLoginButton() {
   const buttonRef = useRef<HTMLDivElement>(null);
 
   async function handleJwtResponse(response: GoogleJwTResponseType) {
-    const account: GoogleJwtCredentialsType = jwtDecode(response.credential);
-
-    // google jwt customer info
-    const customer = {
-      first_name: account.given_name,
-      last_name: account.family_name,
-      email: account.email,
-      multipass_identifier: account.sub,
-      return_to: `/account`,
-    };
-
     // authenticate google customer info via multipass
     await multipass({
-      customer,
+      token: response.credential,
+      provider: 'google',
       redirect: true, // will redirect to
     });
   }
