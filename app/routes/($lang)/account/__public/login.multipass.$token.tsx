@@ -20,13 +20,20 @@ type MultipassTokenResponse = {
 /**
  *  Authenticate a multipass token request
  */
-export async function loader({request, params, context}: LoaderArgs) {
+export async function loader({params, context}: LoaderArgs) {
   const {session, storefront, env} = context;
 
   // multipass token
   const passedToken = params.token;
 
   try {
+    if (!passedToken) {
+      return await redirectHomeError({
+        session,
+        error: 'Multipass token not found',
+      });
+    }
+
     // create a multipassify instance
     const multipassify = new Multipassify(
       env.PRIVATE_SHOPIFY_STORE_MULTIPASS_SECRET,
