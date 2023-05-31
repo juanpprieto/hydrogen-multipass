@@ -4,11 +4,13 @@ import {
   type ActionArgs,
   type LoaderArgs,
 } from '@shopify/remix-oxygen';
+import jwtDecode from 'jwt-decode';
 import {Multipassify} from '~/lib/multipass/multipassify.server';
 import type {
   CustomerInfoType,
-  NotLoggedInResponseType,
+  GoogleJwtCredentialsType,
   MultipassRequestBody,
+  NotLoggedInResponseType,
 } from '~/lib/multipass/types';
 
 /*
@@ -50,7 +52,8 @@ export async function action({request, context}: ActionArgs) {
     // POST requests handler
     // Get the request body
     const body: MultipassRequestBody = await request.json();
-    customer = body.customer;
+    const token = body?.token;
+    const provider = body?.provider;
 
     if (!session) {
       return NotLoggedInResponse({
@@ -59,10 +62,30 @@ export async function action({request, context}: ActionArgs) {
       });
     }
 
+    // try to grab the customerAccessToken from the session if available
     customerAccessToken = await session.get('customerAccessToken');
 
-    // customer wasn't passed, but we have a session token.
-    if (!customer && customerAccessToken) {
+    // attempmt to get the customer info from a thrid party token e.g google signin
+    if (token) {
+      if (provider === 'google') {
+        const account: GoogleJwtCredentialsType = jwtDecode(token);
+
+        // google derived jwt customer info
+        customer = {
+          first_name: account.given_name,
+          last_name: account.family_name,
+          email: account.email,
+          multipass_identifier: account.sub,
+          return_to: `/account`,
+        };
+      } else {
+        // provider not supported
+        return NotLoggedInResponse({
+          url: body?.return_to ?? null,
+          error: 'PROVIDER_NOT_SUPPORTED',
+        });
+      }
+    } else if (customerAccessToken) {
       // Have a customerAccessToken, get the customer so we can find their email.
       const response: {customer: CustomerInfoType} = await storefront.query(
         CUSTOMER_INFO_QUERY,
@@ -74,11 +97,7 @@ export async function action({request, context}: ActionArgs) {
       );
 
       customer = response?.customer ?? null;
-    }
-
-    // Did no receive a customer, and the attempt to get it
-    // from the session failed. Fallback to non-multipass response
-    if (!customer && !customerAccessToken) {
+    } else {
       return handleLoggedOutResponse({
         return_to: body?.return_to ?? null,
         checkoutDomain: env.PRIVATE_SHOPIFY_CHECKOUT_DOMAIN,
@@ -199,7 +218,7 @@ async function handleLoggedOutResponse(options: {
   if (!return_to || !isCheckoutReq) {
     return NotLoggedInResponse({
       url: null,
-      error: 'MISSING_CUSTOMER_ACCESS_TOKEN',
+      error: 'NOT_AUTHORIZED',
     });
   }
 
@@ -221,17 +240,13 @@ function NotLoggedInResponse(options: NotLoggedInResponseType) {
 
   const ERRORS: ErrorsType = {
     MISSING_SESSION: 'No session found.',
-    MISSING_SESSION_AND_CUSTOMER: 'No session or customer found.',
-    MISSING_CUSTOMER: 'Required `customer` was not provided.',
-    MISSING_CUSTOMER_IN_SESSION:
-      'Required `customer` was not found in session.',
     MISSING_EMAIL: 'Required customer `email` was not provided.',
     MISSING_RETURN_TO_URL:
       'Required customer `return_to` URL was not provided.',
-    MISSING_CUSTOMER_ACCESS_TOKEN: 'No customerAccessToken found.',
     FAILED_GENERATING_MULTIPASS: 'Could not generate a multipass url.',
-    FORCING_CHECKOUT_LOGOUT: 'Forcing checkout customer logout.',
     'Invalid Secret': 'Invalid Secret',
+    PROVIDER_NOT_SUPPORTED: 'Provider not supported.',
+    NOT_AUTHORIZED: 'Not authorized.',
   };
 
   const {url, error: errorKey} = options;
