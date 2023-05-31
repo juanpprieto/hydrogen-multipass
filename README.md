@@ -1,3 +1,7 @@
+This is NOT an official Shopify implementation, use at your own risk
+
+---
+
 # Hydrogen Demo Store + Multipass Google Sign in and checkout persistence
 
 At the time of writing [multipass](https://shopify.dev/docs/api/multipass) is available for Shopify Plus customers only.
