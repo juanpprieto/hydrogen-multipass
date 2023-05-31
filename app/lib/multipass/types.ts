@@ -29,25 +29,23 @@ export interface NotAuthResponseType {
 }
 
 interface MultipassBaseOptions {
-  /* required */
   redirect: boolean;
-  // shopDomain: string;
 }
 
-interface MultipassCustomerOption extends MultipassBaseOptions {
-  customer: MultipassCustomer;
+interface MultipassTokenOption extends MultipassBaseOptions {
+  token: string;
+  provider: string;
   return_to?: never;
 }
 
 interface MultipassReturnToOption extends MultipassBaseOptions {
   return_to: string;
-  customer?: never;
+  token?: never;
+  provider?: never;
 }
 
 /* `redirect_to` is required with either `customer` or `return_to` */
-export type MultipassOptions =
-  | MultipassCustomerOption
-  | MultipassReturnToOption;
+export type MultipassOptions = MultipassTokenOption | MultipassReturnToOption;
 
 /*
   api handlers
@@ -64,9 +62,14 @@ export interface CustomerInfoType {
   [key: string]: string | boolean | object | object[];
 }
 
-export interface MultipassRequestBody {
-  customer?: CustomerInfoType;
-  return_to?: string;
+export type MultipassRequestBody = MultipassOptions;
+
+export interface GoogleJwtCredentialsType {
+  given_name: string;
+  family_name: string;
+  email: string;
+  picture: string;
+  sub: string;
 }
 
 export interface CustomerDataResponseType {
